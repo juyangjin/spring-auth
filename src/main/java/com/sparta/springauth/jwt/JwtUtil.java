@@ -1,33 +1,25 @@
 package com.sparta.springauth.jwt;
 
 import com.sparta.springauth.entity.UserRoleEnum;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.Date;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.security.Key;
-import java.util.Base64;
 import org.springframework.util.StringUtils;
 
-@Slf4j
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
+
 @Component
 public class JwtUtil {
     // Header KEY 값
@@ -53,7 +45,6 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    //JWT 생성
     // 토큰 생성
     public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
@@ -83,7 +74,7 @@ public class JwtUtil {
         }
     }
 
-    //Cookie에 들어있던 JWT 토큰을 Substring
+    // JWT 토큰 substring
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
             return tokenValue.substring(7);
@@ -92,7 +83,7 @@ public class JwtUtil {
         throw new NullPointerException("Not Found Token");
     }
 
-    //JWT 토큰 검증
+    // 토큰 검증
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -109,7 +100,7 @@ public class JwtUtil {
         return false;
     }
 
-    //JWT 토큰에서 사용자 정보 가져오기
+    // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
@@ -130,6 +121,5 @@ public class JwtUtil {
         }
         return null;
     }
-
 
 }
